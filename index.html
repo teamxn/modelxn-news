@@ -3,164 +3,100 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ModelXN News | সংবাদ ও আবহাওয়া</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@300;400;500;600;700&family=Playfair+Display:wght@700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<title>ModelXN News | ৩টি সোর্স থেকে সংবাদ</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-  /* ─── CSS RESET & VARIABLES ─── */
-  :root {
-    --primary: #c0392b; --dark: #1a1a1a; --light: #f4f4f4; --white: #ffffff;
-    --gray: #7f8c8d; --border: #e0e0e0; --shadow: 0 4px 12px rgba(0,0,0,0.08);
-  }
+  :root { --primary: #c0392b; --dark: #111; --light: #f4f4f4; --card-bg: #fff; }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Noto Sans Bengali', sans-serif; background: #f9f9f9; color: #333; line-height: 1.6; }
-  a { text-decoration: none; color: inherit; transition: 0.3s; }
+  body { font-family: 'Noto Sans Bengali', sans-serif; background: #f0f2f5; color: #333; }
   
-  /* ─── HEADER & NAV ─── */
-  #top-bar { background: var(--dark); color: #ccc; padding: 8px 5%; font-size: 0.8rem; display: flex; justify-content: space-between; font-family: 'JetBrains Mono', monospace; }
-  #weather-widget { display: flex; gap: 10px; align-items: center; }
-  #weather-widget i { color: #f1c40f; }
-
-  header { background: var(--white); padding: 20px 5%; border-bottom: 4px solid var(--primary); display: flex; align-items: center; justify-content: space-between; box-shadow: var(--shadow); }
-  .logo h1 { font-family: 'Playfair Display', serif; font-size: 2.2rem; font-weight: 900; line-height: 1; }
+  /* Header */
+  header { background: var(--dark); color: #fff; padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid var(--primary); }
+  .logo h1 { font-size: 1.8rem; font-weight: 900; }
   .logo span { color: var(--primary); }
-  .logo p { font-size: 0.8rem; color: var(--gray); letter-spacing: 2px; }
   
-  nav { background: var(--dark); padding: 0 5%; position: sticky; top: 0; z-index: 1000; overflow-x: auto; white-space: nowrap; }
-  nav a { display: inline-block; padding: 15px 20px; color: #fff; font-weight: 600; font-size: 0.9rem; }
-  nav a:hover, nav a.active { background: var(--primary); }
+  /* Weather Widget */
+  .weather-box { background: rgba(255,255,255,0.1); padding: 5px 15px; border-radius: 20px; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; }
+  .weather-box i { color: #f1c40f; }
 
-  /* ─── TICKER ─── */
-  .ticker-wrap { background: var(--primary); color: white; display: flex; height: 40px; overflow: hidden; }
-  .ticker-title { background: #96281b; padding: 0 20px; display: flex; align-items: center; font-weight: bold; z-index: 2; }
-  .ticker { display: flex; align-items: center; width: 100%; overflow: hidden; white-space: nowrap; }
-  .ticker-item { display: inline-block; padding-left: 100%; animation: ticker 30s linear infinite; }
-  @keyframes ticker { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-100%, 0, 0); } }
+  /* Layout */
+  .container { max-width: 1200px; margin: 20px auto; padding: 0 15px; }
+  .section-head { display: flex; align-items: center; gap: 10px; margin: 30px 0 15px; border-bottom: 2px solid #ddd; padding-bottom: 10px; }
+  .section-head h2 { font-size: 1.4rem; color: var(--dark); }
+  .section-head i { color: var(--primary); }
 
-  /* ─── LAYOUT ─── */
-  .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; display: grid; grid-template-columns: 2.5fr 1fr; gap: 30px; }
-  
-  /* ─── NEWS CARDS ─── */
-  .section-title { border-left: 5px solid var(--primary); padding-left: 15px; margin-bottom: 20px; font-size: 1.5rem; font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
-  .refresh-btn { font-size: 0.9rem; color: var(--primary); cursor: pointer; border: 1px solid var(--primary); padding: 5px 10px; border-radius: 4px; }
-  .refresh-btn:hover { background: var(--primary); color: white; }
+  /* Grid System */
+  .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; }
 
-  .news-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-  .card { background: var(--white); border-radius: 8px; overflow: hidden; box-shadow: var(--shadow); transition: transform 0.3s; border: 1px solid #eee; display: flex; flex-direction: column; }
-  .card:hover { transform: translateY(-5px); border-color: var(--primary); }
-  .card-img { height: 180px; background: #ddd; overflow: hidden; position: relative; }
-  .card-img img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
-  .card:hover img { transform: scale(1.1); }
+  /* Cards */
+  .news-card { background: var(--card-bg); border-radius: 8px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: 0.3s; display: flex; flex-direction: column; }
+  .news-card:hover { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+  .card-img { height: 180px; background: #ddd; position: relative; }
+  .card-img img { width: 100%; height: 100%; object-fit: cover; }
   .card-body { padding: 15px; flex: 1; display: flex; flex-direction: column; }
-  .card-tag { color: var(--primary); font-size: 0.7rem; font-weight: 700; text-transform: uppercase; margin-bottom: 5px; }
-  .card-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 10px; line-height: 1.4; flex: 1; }
-  .card-meta { font-size: 0.8rem; color: var(--gray); display: flex; justify-content: space-between; margin-top: 15px; padding-top: 10px; border-top: 1px solid #f0f0f0; }
+  .card-source { font-size: 0.7rem; color: var(--primary); font-weight: bold; text-transform: uppercase; margin-bottom: 5px; }
+  .card-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 10px; line-height: 1.4; color: #1a1a1a; }
+  .card-meta { margin-top: auto; font-size: 0.8rem; color: #777; display: flex; justify-content: space-between; border-top: 1px solid #eee; padding-top: 10px; }
 
-  /* Admin Special Card Style */
-  .admin-card { border-top: 4px solid var(--primary); background: #fffcfc; }
-  .admin-badge { background: var(--primary); color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.65rem; }
+  /* Admin Card */
+  .admin-card { border: 2px solid var(--primary); background: #fff5f5; }
+  .admin-badge { background: var(--primary); color: #fff; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; }
 
-  /* ─── SIDEBAR ─── */
-  .sidebar-widget { background: var(--white); padding: 20px; border-radius: 8px; box-shadow: var(--shadow); margin-bottom: 30px; }
-  .ad-box { background: linear-gradient(135deg, #2c3e50, #bdc3c7); color: white; text-align: center; padding: 40px 20px; border-radius: 8px; }
-  
-  /* ─── FOOTER ─── */
-  footer { background: var(--dark); color: #7f8c8d; padding: 50px 5%; margin-top: 50px; font-size: 0.9rem; }
-  .footer-bottom { border-top: 1px solid #333; margin-top: 30px; padding-top: 20px; display: flex; justify-content: space-between; }
-
-  /* ─── RESPONSIVE ─── */
-  @media (max-width: 768px) { .container { grid-template-columns: 1fr; } #top-bar { flex-direction: column; gap: 5px; text-align: center; } }
+  /* Footer */
+  footer { background: var(--dark); color: #aaa; text-align: center; padding: 30px; margin-top: 50px; }
 </style>
 </head>
 <body>
 
-<div id="top-bar">
-  <div id="date-display">লোডিং...</div>
-  <div id="weather-widget">
-    <i class="fas fa-cloud-sun"></i> <span id="w-temp">--°C</span> | <span id="w-city">রাজশাহী</span>
-  </div>
-</div>
-
 <header>
   <div class="logo">
-    <h1>Model<span>XN</span> News</h1>
-    <p>সঠিক সংবাদ, সবার আগে</p>
+    <h1>Model<span>XN</span></h1>
+  </div>
+  <div class="weather-box" id="weather-display">
+    <i class="fas fa-spinner fa-spin"></i> লোড হচ্ছে...
   </div>
 </header>
 
-<div class="ticker-wrap">
-  <div class="ticker-title">ব্রেকিং</div>
-  <div class="ticker">
-    <div class="ticker-item" id="ticker-text">ModelXN নিউজ পোর্টালে স্বাগতম... দেশ ও বিদেশের সর্বশেষ খবরের জন্য চোখ রাখুন...</div>
-  </div>
-</div>
-
-<nav>
-  <a href="#" class="active" onclick="fetchAllNews('all')">হোম</a>
-  <a href="#" onclick="fetchAllNews('bangladesh')">বাংলাদেশ</a>
-  <a href="#" onclick="fetchAllNews('world')">আন্তর্জাতিক</a>
-  <a href="#" onclick="fetchAllNews('technology')">প্রযুক্তি</a>
-  <a href="#" onclick="fetchAllNews('sports')">খেলাধুলা</a>
-  <a href="#" onclick="fetchAllNews('entertainment')">বিনোদন</a>
-</nav>
-
 <div class="container">
-  
-  <div class="main-content">
-    
-    <div id="admin-section" style="display:none;">
-      <div class="section-title">
-        <span><i class="fas fa-star" style="color:var(--primary)"></i> সম্পাদকীয় / বিশেষ সংবাদ</span>
-      </div>
-      <div id="admin-news-grid" class="news-grid" style="margin-bottom: 40px;"></div>
-    </div>
 
-    <div class="section-title">
-      <span><i class="fas fa-globe"></i> সর্বশেষ সংবাদ</span>
-      <span class="refresh-btn" onclick="fetchAllNews()"><i class="fas fa-sync-alt"></i> রিফ্রেশ</span>
+  <div id="admin-section" style="display:none;">
+    <div class="section-head">
+      <i class="fas fa-star"></i> <h2>সম্পাদকীয় (Admin Picks)</h2>
     </div>
-    <div id="api-news-grid" class="news-grid">
-      <p style="text-align:center;">সংবাদ লোড হচ্ছে...</p>
-    </div>
-
+    <div class="grid-3" id="admin-grid"></div>
   </div>
 
-  <aside>
-    <div class="sidebar-widget ad-box">
-      <h3>বিজ্ঞাপন দিন</h3>
-      <p>আপনার পণ্যের প্রচার করুন এখানে</p>
-      <button style="background:var(--primary); color:white; border:none; padding:8px 15px; margin-top:10px; cursor:pointer;">যোগাযোগ</button>
-    </div>
-    
-    <div class="sidebar-widget">
-      <h4><i class="fas fa-fire"></i> জনপ্রিয় ট্যাগ</h4>
-      <div style="display:flex; flex-wrap:wrap; gap:5px; margin-top:10px;">
-        <span style="background:#eee; padding:5px 10px; font-size:0.8rem; border-radius:20px;">#বাংলাদেশ</span>
-        <span style="background:#eee; padding:5px 10px; font-size:0.8rem; border-radius:20px;">#ক্রিকেট</span>
-        <span style="background:#eee; padding:5px 10px; font-size:0.8rem; border-radius:20px;">#Viral</span>
-        <span style="background:#eee; padding:5px 10px; font-size:0.8rem; border-radius:20px;">#Tech</span>
-      </div>
-    </div>
-  </aside>
+  <div class="section-head">
+    <i class="fas fa-newspaper"></i> <h2>ব্রেকিং নিউজ (GNews Source)</h2>
+  </div>
+  <div class="grid-3" id="gnews-grid">
+    <p>সংবাদ লোড হচ্ছে...</p>
+  </div>
+
+  <div class="section-head">
+    <i class="fas fa-globe-asia"></i> <h2>সর্বশেষ আপডেট (NewsData Source)</h2>
+  </div>
+  <div class="grid-4" id="newsdata-grid">
+    <p>সংবাদ লোড হচ্ছে...</p>
+  </div>
 
 </div>
 
 <footer>
-  <div class="footer-bottom">
-    <p>&copy; ২০২৬ ModelXN News. সর্বস্বত্ব সংরক্ষিত।</p>
-    <p>Developed by Shuvo Bro</p>
-  </div>
+  <p>&copy; ২০২৬ ModelXN News | Developed by Shuvo Bro</p>
 </footer>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
 <script>
-/* ─── ১. কনফিগারেশন (API KEYS) ─── */
-const KEYS = {
-  GNEWS: '137053cf0244c5090b6fd16bfcebccc7',
-  NEWSDATA: 'pub_61fbb227c3654dd99d61b192b9a26e9a',
-  WEATHER: '622c4de5ee05cbfb7e93716f7b4324bf'
+/* ─── ১. ৩টি API KEY কনফিগারেশন ─── */
+const API_KEYS = {
+  GNEWS: '137053cf0244c5090b6fd16bfcebccc7',           // GNews
+  NEWSDATA: 'pub_61fbb227c3654dd99d61b192b9a26e9a',    // NewsData
+  WEATHER: '622c4de5ee05cbfb7e93716f7b4324bf'          // OpenWeather
 };
 
 const FIREBASE_CONFIG = {
@@ -172,151 +108,130 @@ const FIREBASE_CONFIG = {
   appId: "1:1018260950671:web:12388b977b6fd9fbbf2afa"
 };
 
-/* ─── ২. FIREBASE সেটআপ ─── */
+/* ─── ২. API 1: WEATHER FUNCTION ─── */
+async function loadWeather() {
+  const url = `https://api.openweathermap.org/data/2.5/weather?q=Rajshahi&units=metric&lang=bn&appid=${API_KEYS.WEATHER}`;
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
+    if (data.main) {
+      document.getElementById('weather-display').innerHTML = `
+        <i class="fas fa-cloud-sun"></i> 
+        <span>${data.name}: ${Math.round(data.main.temp)}°C, ${data.weather[0].description}</span>
+      `;
+    }
+  } catch (e) {
+    document.getElementById('weather-display').innerHTML = '<i class="fas fa-exclamation-circle"></i> আবহাওয়া অফলাইন';
+  }
+}
+
+/* ─── ৩. API 2: GNEWS FUNCTION ─── */
+async function loadGNews() {
+  const container = document.getElementById('gnews-grid');
+  // GNews থেকে টপ হেডলাইন আনবে
+  const url = `https://gnews.io/api/v4/top-headlines?country=bd&lang=bn&max=3&apikey=${API_KEYS.GNEWS}`;
+  
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
+    
+    if (data.articles) {
+      container.innerHTML = '';
+      data.articles.forEach(item => {
+        container.innerHTML += createCard(item.title, item.source.name, item.image, item.url, item.publishedAt);
+      });
+    } else {
+      container.innerHTML = '<p>GNews কোটা শেষ বা ডাটা নেই।</p>';
+    }
+  } catch (e) { container.innerHTML = '<p>GNews লোড হতে সমস্যা।</p>'; }
+}
+
+/* ─── ৪. API 3: NEWSDATA FUNCTION ─── */
+async function loadNewsData() {
+  const container = document.getElementById('newsdata-grid');
+  // NewsData থেকে আরও খবর আনবে
+  const url = `https://newsdata.io/api/1/news?apikey=${API_KEYS.NEWSDATA}&country=bd&language=bn`;
+  
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
+    
+    if (data.results) {
+      container.innerHTML = '';
+      data.results.forEach(item => {
+        // NewsData তে ছবির ফিল্ড হলো image_url
+        let img = item.image_url ? item.image_url : 'https://via.placeholder.com/300x200?text=News+Update';
+        container.innerHTML += createCard(item.title, item.source_id, img, item.link, item.pubDate);
+      });
+    } else {
+      container.innerHTML = '<p>NewsData সার্ভার রেসপন্স করছে না।</p>';
+    }
+  } catch (e) { container.innerHTML = '<p>NewsData লোড হতে সমস্যা।</p>'; }
+}
+
+/* ─── ৫. FIREBASE ADMIN FUNCTION ─── */
 try {
   firebase.initializeApp(FIREBASE_CONFIG);
   const db = firebase.firestore();
   
-  // অ্যাডমিন নিউজ লোড করা
   db.collection("news").orderBy("timestamp", "desc").limit(3).onSnapshot(snap => {
-    const container = document.getElementById('admin-news-grid');
     const section = document.getElementById('admin-section');
+    const grid = document.getElementById('admin-grid');
     
-    if(!snap.empty) {
+    if (!snap.empty) {
       section.style.display = 'block';
-      container.innerHTML = '';
+      grid.innerHTML = '';
       snap.forEach(doc => {
         const d = doc.data();
-        container.innerHTML += createCard(
-          d.title, 
-          d.content.substring(0, 100) + '...', 
-          null, 
-          'Admin Pick', 
-          'ModelXN', 
-          'Just Now',
-          true // is admin
-        );
+        grid.innerHTML += `
+          <div class="news-card admin-card">
+            <div class="card-body">
+              <div class="card-source"><span class="admin-badge">ADMIN</span> ModelXN</div>
+              <div class="card-title">${d.title}</div>
+              <p style="font-size:0.9rem; color:#555;">${d.content}</p>
+              <div class="card-meta">
+                <span><i class="fas fa-clock"></i> Just Now</span>
+              </div>
+            </div>
+          </div>
+        `;
       });
     }
   });
-} catch(e) { console.log('Firebase Init Error'); }
+} catch(e) { console.log('Firebase Error'); }
 
-/* ─── ৩. মেইন নিউজ লজিক (স্মার্ট ফলব্যাক সিস্টেম) ─── */
-async function fetchAllNews(query = '') {
-  const container = document.getElementById('api-news-grid');
-  container.innerHTML = '<p style="text-align:center">খবর খোঁজা হচ্ছে...</p>';
-
-  // ধাপ ১: GNews দিয়ে চেষ্টা
-  try {
-    const url = query 
-      ? `https://gnews.io/api/v4/search?q=${query}&lang=bn&max=9&apikey=${KEYS.GNEWS}`
-      : `https://gnews.io/api/v4/top-headlines?lang=bn&country=bd&max=9&apikey=${KEYS.GNEWS}`;
-    
-    const res = await fetch(url);
-    if(res.status === 429) throw new Error("Limit Exceeded"); // লিমিট শেষ হলে এরর দেবে
-    const data = await res.json();
-    
-    if(data.articles && data.articles.length > 0) {
-      renderNews(data.articles, 'gnews');
-      return; // সফল হলে এখানেই শেষ
-    }
-  } catch(e) { console.log('GNews Failed, trying backup...'); }
-
-  // ধাপ ২: NewsData দিয়ে চেষ্টা (যদি GNews ফেল করে)
-  try {
-    const url = `https://newsdata.io/api/1/news?apikey=${KEYS.NEWSDATA}&country=bd&language=bn`;
-    const res = await fetch(url);
-    const data = await res.json();
-    
-    if(data.results && data.results.length > 0) {
-      renderNews(data.results, 'newsdata');
-      return;
-    }
-  } catch(e) { console.log('NewsData Failed, using demo...'); }
-
-  // ধাপ ৩: সব ফেল করলে ডেমো ডাটা দেখাবে
-  loadDemoData(); 
-}
-
-/* ─── ৪. রেন্ডারিং ফাংশন ─── */
-function renderNews(articles, source) {
-  const container = document.getElementById('api-news-grid');
-  container.innerHTML = '';
-
-  articles.forEach(item => {
-    // সোর্স অনুযায়ী ডাটা ঠিক করা
-    let title = source === 'gnews' ? item.title : item.title;
-    let desc = source === 'gnews' ? item.description : item.description;
-    let img = source === 'gnews' ? item.image : item.image_url;
-    let link = source === 'gnews' ? item.url : item.link;
-    let srcName = source === 'gnews' ? item.source.name : item.source_id;
-    let date = new Date().toLocaleDateString('bn-BD');
-
-    container.innerHTML += createCard(title, desc, img, 'Latest', srcName, date, false, link);
-  });
-}
-
-function createCard(title, desc, img, tag, source, time, isAdmin, link='#') {
-  const imageHtml = img 
-    ? `<img src="${img}" onerror="this.src='https://via.placeholder.com/300x200?text=ModelXN'">` 
-    : `<img src="https://via.placeholder.com/300x200?text=News+Update">`;
-    
-  const badge = isAdmin ? '<span class="admin-badge">ADMIN</span> ' : '';
-  const cardClass = isAdmin ? 'card admin-card' : 'card';
-
+/* ─── কার্ড জেনারেটর (Design Template) ─── */
+function createCard(title, source, img, link, date) {
+  // যদি ছবি না থাকে ডিফল্ট ছবি বসাবে
+  const image = img ? img : 'https://via.placeholder.com/300x200?text=ModelXN';
+  const time = date ? new Date(date).toLocaleDateString('bn-BD') : 'সদ্য';
+  
   return `
-    <div class="${cardClass}">
-      <div class="card-img" onclick="window.open('${link}')" style="cursor:pointer">${imageHtml}</div>
+    <div class="news-card">
+      <div class="card-img">
+        <img src="${image}" onerror="this.src='https://via.placeholder.com/300x200?text=Error'">
+      </div>
       <div class="card-body">
-        <div class="card-tag">${badge}${tag}</div>
-        <div class="card-title" onclick="window.open('${link}')" style="cursor:pointer">${title}</div>
-        <p style="font-size:0.85rem; color:#555;">${desc || 'বিস্তারিত জানতে ক্লিক করুন...'}</p>
+        <div class="card-source">${source}</div>
+        <a href="${link}" target="_blank" style="text-decoration:none;">
+          <div class="card-title">${title}</div>
+        </a>
         <div class="card-meta">
-          <span><i class="fas fa-newspaper"></i> ${source}</span>
           <span><i class="far fa-clock"></i> ${time}</span>
+          <span style="color:var(--primary); cursor:pointer;" onclick="window.open('${link}')">পড়ুন <i class="fas fa-arrow-right"></i></span>
         </div>
       </div>
     </div>
   `;
 }
 
-/* ─── ৫. ডেমো ডাটা (ব্যাকআপ) ─── */
-function loadDemoData() {
-  const demoNews = [
-    { title: "বাংলাদেশের জিডিপি প্রবৃদ্ধিতে নতুন রেকর্ড", desc: "অর্থনীতিতে নতুন দিগন্ত উন্মোচিত হয়েছে..." },
-    { title: "রাজশাহীতে আধুনিক হাই-টেক পার্কের উদ্বোধন", desc: "তরুণদের জন্য কর্মসংস্থানের বিশাল সুযোগ..." },
-    { title: "বিশ্বকাপ ক্রিকেটে বাংলাদেশের দুর্দান্ত জয়", desc: "টাইগারদের গর্জনে কাঁপলো বিশ্ব..." },
-    { title: "AI প্রযুক্তিতে নতুন বিপ্লব: চ্যাটজিপিটি ৫", desc: "প্রযুক্তি বিশ্বে আসছে আমূল পরিবর্তন..." }
-  ];
-  const container = document.getElementById('api-news-grid');
-  container.innerHTML = '';
-  demoNews.forEach(n => {
-    container.innerHTML += createCard(n.title, n.desc, null, 'Demo', 'System', 'Just Now', false);
-  });
-}
-
-/* ─── ৬. আবহাওয়া ও অন্যান্য ─── */
-async function loadWeather() {
-  try {
-    // ওপেনওয়েদার এপিআই (আপনার কি দিয়ে)
-    const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=Rajshahi&units=metric&appid=${KEYS.WEATHER}`);
-    const data = await res.json();
-    document.getElementById('w-temp').innerText = Math.round(data.main.temp) + "°C";
-    document.getElementById('w-city').innerText = data.name;
-  } catch(e) { console.log('Weather Error'); }
-}
-
-function updateTime() {
-  const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-  document.getElementById('date-display').innerText = new Date().toLocaleDateString('bn-BD', options);
-}
-
-// Start Everything
+/* ─── RUN EVERYTHING ─── */
 window.onload = () => {
-  updateTime();
-  loadWeather();
-  fetchAllNews(); // অটোমেটিক সব সোর্স চেক করবে
+  loadWeather();   // API 1 Call
+  loadGNews();     // API 2 Call
+  loadNewsData();  // API 3 Call
 };
 </script>
+
 </body>
 </html>
