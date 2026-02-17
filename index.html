@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ModelXN News | মডেল এক্সএন নিউজ</title>
+    
+    <link rel="stylesheet" href="style.css">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <div id="weather-bridge">
+        <div id="weather-info">
+            <i class="fas fa-map-marker-alt"></i> <span id="city">রাজশাহী</span>: 
+            <i class="fas fa-temperature-high"></i> <span id="temp">--</span>°C, 
+            <span id="desc">লোড হচ্ছে...</span>
+        </div>
+    </div>
+
+    <header>
+        <h1>ModelXN News</h1>
+        <p>নির্ভুল সংবাদ, সবার আগে</p>
+    </header>
+
+    <main>
+        <section id="manual-section">
+            <h2 class="section-title"><i class="fas fa-star"></i> বিশেষ সংবাদ (Admin Picks)</h2>
+            <div id="my-news-container" class="news-grid">
+                <p style="text-align:center;">ফায়ারবেস থেকে নিউজ লোড হচ্ছে...</p>
+            </div>
+        </section>
+
+        <hr>
+
+        <section id="auto-section">
+            <h2 class="section-title"><i class="fas fa-globe-asia"></i> বাংলাদেশ ও বিশ্ব সংবাদ</h2>
+            <div id="api-news-container" class="news-grid">
+                <p style="text-align:center;">অটোমেটিক নিউজ লোড হচ্ছে...</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; ২০২৬ ModelXN News | Developed by Shuvo Bro</p>
+        <p><small>Powered by NewsData.io & OpenWeatherMap</small></p>
+    </footer>
+
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+    <script src="script.js"></script>
+
+</body>
+</html>
