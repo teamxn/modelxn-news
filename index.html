@@ -3,982 +3,320 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ModelXN News | সঠিক সংবাদ, সবার আগে</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<title>ModelXN News | সংবাদ ও আবহাওয়া</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@300;400;500;600;700&family=Playfair+Display:wght@700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-  /* ─── RESET & VARIABLES ─── */
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
+  /* ─── CSS RESET & VARIABLES ─── */
   :root {
-    --red:      #c0392b;
-    --red-dark: #96281b;
-    --red-lite: #f9eaea;
-    --ink:      #111111;
-    --ink-2:    #2c2c2c;
-    --ink-3:    #555555;
-    --ink-4:    #888888;
-    --paper:    #f5f0ea;
-    --paper-2:  #fffdf9;
-    --white:    #ffffff;
-    --border:   #e0d8ce;
-    --gold:     #c8972a;
-    --shadow-s: 0 2px 8px rgba(0,0,0,.07);
-    --shadow-m: 0 6px 24px rgba(0,0,0,.10);
-    --shadow-l: 0 16px 48px rgba(0,0,0,.13);
-    --radius:   6px;
-    --font-bn:  'Noto Sans Bengali', sans-serif;
-    --font-en:  'Playfair Display', serif;
-    --font-mono:'JetBrains Mono', monospace;
-    --transition: .25s cubic-bezier(.4,0,.2,1);
+    --primary: #c0392b; --dark: #1a1a1a; --light: #f4f4f4; --white: #ffffff;
+    --gray: #7f8c8d; --border: #e0e0e0; --shadow: 0 4px 12px rgba(0,0,0,0.08);
   }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Noto Sans Bengali', sans-serif; background: #f9f9f9; color: #333; line-height: 1.6; }
+  a { text-decoration: none; color: inherit; transition: 0.3s; }
+  
+  /* ─── HEADER & NAV ─── */
+  #top-bar { background: var(--dark); color: #ccc; padding: 8px 5%; font-size: 0.8rem; display: flex; justify-content: space-between; font-family: 'JetBrains Mono', monospace; }
+  #weather-widget { display: flex; gap: 10px; align-items: center; }
+  #weather-widget i { color: #f1c40f; }
 
-  html { scroll-behavior: smooth; }
+  header { background: var(--white); padding: 20px 5%; border-bottom: 4px solid var(--primary); display: flex; align-items: center; justify-content: space-between; box-shadow: var(--shadow); }
+  .logo h1 { font-family: 'Playfair Display', serif; font-size: 2.2rem; font-weight: 900; line-height: 1; }
+  .logo span { color: var(--primary); }
+  .logo p { font-size: 0.8rem; color: var(--gray); letter-spacing: 2px; }
+  
+  nav { background: var(--dark); padding: 0 5%; position: sticky; top: 0; z-index: 1000; overflow-x: auto; white-space: nowrap; }
+  nav a { display: inline-block; padding: 15px 20px; color: #fff; font-weight: 600; font-size: 0.9rem; }
+  nav a:hover, nav a.active { background: var(--primary); }
 
-  body {
-    font-family: var(--font-bn);
-    background: var(--paper);
-    color: var(--ink);
-    line-height: 1.7;
-    min-height: 100vh;
-  }
-
-  /* ─── TOP UTILITY BAR ─── */
-  #utility-bar {
-    background: var(--ink);
-    color: #ccc;
-    font-size: .75rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 6px 24px;
-    gap: 16px;
-    font-family: var(--font-mono);
-  }
-  #utility-bar .left { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
-  #utility-bar .right { display: flex; align-items: center; gap: 10px; }
-  #live-clock { color: var(--gold); font-weight: 600; letter-spacing: .06em; }
-  #weather-pill {
-    display: flex; align-items: center; gap: 6px;
-    background: rgba(255,255,255,.08);
-    border-radius: 20px; padding: 3px 10px;
-    transition: var(--transition);
-  }
-  #weather-pill i { color: #5bc8f5; }
-  .social-icon {
-    display: grid; place-items: center;
-    width: 26px; height: 26px;
-    border-radius: 50%;
-    background: rgba(255,255,255,.1);
-    color: #ccc;
-    font-size: .7rem;
-    text-decoration: none;
-    transition: var(--transition);
-  }
-  .social-icon:hover { background: var(--red); color: #fff; }
-
-  /* ─── BREAKING TICKER ─── */
-  #ticker-bar {
-    background: var(--red);
-    color: #fff;
-    display: flex;
-    align-items: center;
-    overflow: hidden;
-    height: 36px;
-    position: relative;
-  }
-  #ticker-label {
-    background: var(--red-dark);
-    padding: 0 18px;
-    height: 100%;
-    display: flex; align-items: center;
-    font-weight: 700;
-    font-size: .78rem;
-    letter-spacing: .08em;
-    white-space: nowrap;
-    flex-shrink: 0;
-    gap: 6px;
-    z-index: 2;
-  }
-  #ticker-label i { animation: pulse 1.2s infinite; }
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
-  #ticker-track {
-    display: flex;
-    align-items: center;
-    overflow: hidden;
-    flex: 1;
-    height: 100%;
-  }
-  #ticker-content {
-    display: flex; align-items: center;
-    white-space: nowrap;
-    animation: ticker-scroll 60s linear infinite;
-    font-size: .82rem;
-    font-weight: 500;
-    gap: 0;
-  }
-  #ticker-content:hover { animation-play-state: paused; }
-  .ticker-item { padding: 0 32px; border-right: 1px solid rgba(255,255,255,.25); cursor: pointer; }
-  .ticker-item:hover { color: #ffd700; text-decoration: underline; }
-  @keyframes ticker-scroll {
-    0%   { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
-  }
-
-  /* ─── MASTHEAD ─── */
-  #masthead {
-    background: var(--white);
-    border-bottom: 3px solid var(--red);
-    padding: 0 24px;
-  }
-  #masthead-inner {
-    max-width: 1280px;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 16px 0;
-    gap: 16px;
-    flex-wrap: wrap;
-  }
-  .logo-block { display: flex; align-items: center; gap: 14px; text-decoration: none; }
-  .logo-icon {
-    width: 54px; height: 54px;
-    background: var(--red);
-    border-radius: var(--radius);
-    display: grid; place-items: center;
-    color: #fff;
-    font-family: var(--font-en);
-    font-size: 1.6rem;
-    font-weight: 900;
-    letter-spacing: -.04em;
-    box-shadow: 0 4px 16px rgba(192,57,43,.4);
-    flex-shrink: 0;
-  }
-  .logo-text h1 {
-    font-family: var(--font-en);
-    font-size: 1.8rem;
-    font-weight: 900;
-    color: var(--ink);
-    line-height: 1;
-    letter-spacing: -.02em;
-  }
-  .logo-text h1 span { color: var(--red); }
-  .logo-text p {
-    font-size: .72rem;
-    color: var(--ink-3);
-    font-family: var(--font-bn);
-    letter-spacing: .06em;
-    margin-top: 2px;
-  }
-  #masthead-date {
-    font-family: var(--font-mono);
-    font-size: .72rem;
-    color: var(--ink-3);
-    text-align: right;
-    line-height: 1.8;
-  }
-  #masthead-date strong { color: var(--ink); font-size: .85rem; }
-
-  /* ─── NAV ─── */
-  #nav-bar {
-    background: var(--ink);
-    position: sticky; top: 0; z-index: 100;
-    box-shadow: var(--shadow-m);
-  }
-  #nav-inner {
-    max-width: 1280px; margin: 0 auto;
-    display: flex; align-items: center;
-    padding: 0 24px;
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-  #nav-inner::-webkit-scrollbar { display: none; }
-  .nav-item {
-    display: flex; align-items: center; gap: 6px;
-    padding: 14px 18px;
-    color: #ccc;
-    font-size: .82rem;
-    font-weight: 600;
-    white-space: nowrap;
-    cursor: pointer;
-    transition: var(--transition);
-    border-bottom: 3px solid transparent;
-    text-decoration: none;
-    letter-spacing: .04em;
-  }
-  .nav-item:hover, .nav-item.active {
-    color: #fff;
-    border-bottom-color: var(--red);
-    background: rgba(255,255,255,.05);
-  }
-  .nav-item i { font-size: .78rem; }
+  /* ─── TICKER ─── */
+  .ticker-wrap { background: var(--primary); color: white; display: flex; height: 40px; overflow: hidden; }
+  .ticker-title { background: #96281b; padding: 0 20px; display: flex; align-items: center; font-weight: bold; z-index: 2; }
+  .ticker { display: flex; align-items: center; width: 100%; overflow: hidden; white-space: nowrap; }
+  .ticker-item { display: inline-block; padding-left: 100%; animation: ticker 30s linear infinite; }
+  @keyframes ticker { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-100%, 0, 0); } }
 
   /* ─── LAYOUT ─── */
-  #page-wrap {
-    max-width: 1280px; margin: 0 auto;
-    padding: 28px 24px 48px;
-  }
-
-  /* ─── SECTION HEADER ─── */
-  .section-header {
-    display: flex; align-items: center; gap: 12px;
-    margin-bottom: 22px;
-    padding-bottom: 12px;
-    border-bottom: 2px solid var(--border);
-    position: relative;
-  }
-  .section-header::after {
-    content: '';
-    position: absolute; bottom: -2px; left: 0;
-    width: 60px; height: 2px;
-    background: var(--red);
-  }
-  .section-icon {
-    width: 34px; height: 34px;
-    background: var(--red);
-    border-radius: var(--radius);
-    display: grid; place-items: center;
-    color: #fff; font-size: .85rem;
-    flex-shrink: 0;
-  }
-  .section-header h2 {
-    font-size: 1.15rem;
-    font-weight: 700;
-    color: var(--ink);
-    font-family: var(--font-bn);
-  }
-  .section-header .see-all {
-    margin-left: auto;
-    font-size: .75rem;
-    color: var(--red);
-    text-decoration: none;
-    font-weight: 600;
-    display: flex; align-items: center; gap: 4px;
-    transition: var(--transition);
-  }
-  .section-header .see-all:hover { color: var(--red-dark); }
-
-  /* ─── HERO GRID ─── */
-  #hero-grid {
-    display: grid;
-    grid-template-columns: 1.6fr 1fr;
-    grid-template-rows: auto auto;
-    gap: 20px;
-    margin-bottom: 40px;
-  }
-  .hero-main {
-    grid-row: 1 / 3;
-    background: var(--white);
-    border-radius: var(--radius);
-    overflow: hidden;
-    box-shadow: var(--shadow-m);
-    cursor: pointer;
-    transition: var(--transition);
-    display: flex; flex-direction: column;
-  }
-  .hero-main:hover { transform: translateY(-3px); box-shadow: var(--shadow-l); }
-  .hero-main .card-img {
-    width: 100%; height: 320px;
-    object-fit: cover;
-    background: linear-gradient(135deg, #f0e6d3 0%, #ddd5c7 100%);
-    position: relative; overflow: hidden;
-  }
-  .hero-main .card-img img {
-    width: 100%; height: 100%; object-fit: cover;
-    transition: transform .4s ease;
-  }
-  .hero-main:hover .card-img img { transform: scale(1.04); }
-  .hero-main .card-body { padding: 22px; flex: 1; display: flex; flex-direction: column; }
-  .hero-main .card-cat {
-    font-size: .68rem; font-weight: 700;
-    letter-spacing: .12em; text-transform: uppercase;
-    color: var(--red); margin-bottom: 10px;
-  }
-  .hero-main .card-title {
-    font-size: 1.35rem; font-weight: 800;
-    line-height: 1.5; color: var(--ink);
-    margin-bottom: 12px;
-  }
-  .hero-main .card-excerpt {
-    font-size: .84rem; color: var(--ink-3);
-    line-height: 1.75; flex: 1;
-  }
-  .hero-main .card-meta {
-    display: flex; align-items: center; gap: 12px;
-    margin-top: 16px; font-size: .72rem; color: var(--ink-4);
-  }
-  .hero-main .card-meta i { color: var(--red); }
-
-  .hero-side {
-    background: var(--white);
-    border-radius: var(--radius);
-    overflow: hidden;
-    box-shadow: var(--shadow-s);
-    cursor: pointer;
-    transition: var(--transition);
-    display: flex;
-  }
-  .hero-side:hover { transform: translateY(-2px); box-shadow: var(--shadow-m); }
-  .hero-side .card-img {
-    width: 130px; flex-shrink: 0;
-    background: linear-gradient(135deg, #f0e6d3 0%, #ddd5c7 100%);
-    overflow: hidden;
-  }
-  .hero-side .card-img img { width: 100%; height: 100%; object-fit: cover; }
-  .hero-side .card-body { padding: 14px; flex: 1; }
-  .hero-side .card-cat {
-    font-size: .65rem; font-weight: 700;
-    letter-spacing: .1em; text-transform: uppercase;
-    color: var(--red); margin-bottom: 6px;
-  }
-  .hero-side .card-title {
-    font-size: .88rem; font-weight: 700;
-    line-height: 1.55; color: var(--ink);
-    margin-bottom: 8px;
-  }
-  .hero-side .card-meta { font-size: .68rem; color: var(--ink-4); }
-  .hero-side .card-meta i { color: var(--red); margin-right: 4px; }
-
-  /* ─── TWO-COL LAYOUT ─── */
-  #two-col {
-    display: grid;
-    grid-template-columns: 1fr 340px;
-    gap: 28px;
-    margin-bottom: 40px;
-  }
-
+  .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; display: grid; grid-template-columns: 2.5fr 1fr; gap: 30px; }
+  
   /* ─── NEWS CARDS ─── */
-  .news-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 18px;
-  }
-  .news-card {
-    background: var(--white);
-    border-radius: var(--radius);
-    overflow: hidden;
-    box-shadow: var(--shadow-s);
-    cursor: pointer;
-    transition: var(--transition);
-    display: flex; flex-direction: column;
-    border: 1px solid var(--border);
-  }
-  .news-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-m); border-color: var(--red); }
-  .news-card .card-img {
-    height: 170px;
-    background: linear-gradient(135deg, #f0e6d3 0%, #ddd5c7 100%);
-    overflow: hidden; position: relative;
-  }
-  .news-card .card-img img { width: 100%; height: 100%; object-fit: cover; transition: transform .35s ease; }
-  .news-card:hover .card-img img { transform: scale(1.05); }
-  .news-card .card-body { padding: 14px 16px 16px; flex: 1; display: flex; flex-direction: column; }
-  .news-card .card-cat {
-    font-size: .64rem; font-weight: 700;
-    letter-spacing: .1em; text-transform: uppercase;
-    color: var(--red); margin-bottom: 6px;
-  }
-  .news-card .card-title {
-    font-size: .9rem; font-weight: 700;
-    line-height: 1.6; color: var(--ink);
-    flex: 1; margin-bottom: 12px;
-  }
-  .news-card .card-meta {
-    display: flex; align-items: center; gap: 8px;
-    font-size: .68rem; color: var(--ink-4);
-    border-top: 1px solid var(--border);
-    padding-top: 10px;
-  }
-  .news-card .card-meta i { color: var(--red); font-size: .65rem; }
+  .section-title { border-left: 5px solid var(--primary); padding-left: 15px; margin-bottom: 20px; font-size: 1.5rem; font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
+  .refresh-btn { font-size: 0.9rem; color: var(--primary); cursor: pointer; border: 1px solid var(--primary); padding: 5px 10px; border-radius: 4px; }
+  .refresh-btn:hover { background: var(--primary); color: white; }
 
-  /* ─── SKELETON LOADER ─── */
-  .skeleton {
-    background: linear-gradient(90deg, #eee 25%, #f5f5f5 50%, #eee 75%);
-    background-size: 200% 100%;
-    animation: shimmer 1.4s infinite;
-    border-radius: 4px;
-  }
-  @keyframes shimmer { 0%{background-position:200%} 100%{background-position:-200%} }
-  .skeleton-card {
-    background: var(--white);
-    border-radius: var(--radius);
-    overflow: hidden;
-    border: 1px solid var(--border);
-  }
-  .skeleton-img { height: 170px; }
-  .skeleton-body { padding: 14px 16px; }
-  .skeleton-line { height: 12px; margin-bottom: 8px; border-radius: 3px; }
-  .skeleton-line.short { width: 40%; }
-  .skeleton-line.medium { width: 80%; }
+  .news-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+  .card { background: var(--white); border-radius: 8px; overflow: hidden; box-shadow: var(--shadow); transition: transform 0.3s; border: 1px solid #eee; display: flex; flex-direction: column; }
+  .card:hover { transform: translateY(-5px); border-color: var(--primary); }
+  .card-img { height: 180px; background: #ddd; overflow: hidden; position: relative; }
+  .card-img img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
+  .card:hover img { transform: scale(1.1); }
+  .card-body { padding: 15px; flex: 1; display: flex; flex-direction: column; }
+  .card-tag { color: var(--primary); font-size: 0.7rem; font-weight: 700; text-transform: uppercase; margin-bottom: 5px; }
+  .card-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 10px; line-height: 1.4; flex: 1; }
+  .card-meta { font-size: 0.8rem; color: var(--gray); display: flex; justify-content: space-between; margin-top: 15px; padding-top: 10px; border-top: 1px solid #f0f0f0; }
+
+  /* Admin Special Card Style */
+  .admin-card { border-top: 4px solid var(--primary); background: #fffcfc; }
+  .admin-badge { background: var(--primary); color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.65rem; }
 
   /* ─── SIDEBAR ─── */
-  #sidebar { display: flex; flex-direction: column; gap: 24px; }
-
-  /* Weather Widget */
-  #weather-widget {
-    background: linear-gradient(145deg, #1a2a4a 0%, #0d1b36 100%);
-    border-radius: var(--radius);
-    padding: 22px;
-    color: #fff;
-    position: relative;
-    overflow: hidden;
-    box-shadow: var(--shadow-m);
-  }
-  #weather-widget::before {
-    content: '';
-    position: absolute; top: -40px; right: -40px;
-    width: 160px; height: 160px;
-    background: radial-gradient(circle, rgba(91,200,245,.15) 0%, transparent 70%);
-    border-radius: 50%;
-  }
-  .weather-city {
-    font-size: .75rem; font-weight: 600;
-    letter-spacing: .1em; text-transform: uppercase;
-    color: rgba(255,255,255,.6); margin-bottom: 16px;
-    display: flex; align-items: center; gap: 6px;
-  }
-  .weather-city i { color: #5bc8f5; }
-  .weather-main { display: flex; align-items: flex-end; gap: 14px; margin-bottom: 18px; }
-  .weather-icon-lg { font-size: 3.2rem; line-height: 1; }
-  .weather-temp { font-size: 3.4rem; font-weight: 800; line-height: 1; font-family: var(--font-mono); }
-  .weather-temp sup { font-size: 1.4rem; vertical-align: super; margin-left: 2px; }
-  .weather-desc { font-size: .82rem; color: rgba(255,255,255,.7); margin-bottom: 16px; }
-  .weather-details {
-    display: grid; grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    border-top: 1px solid rgba(255,255,255,.1);
-    padding-top: 16px;
-  }
-  .weather-detail { display: flex; align-items: center; gap: 6px; font-size: .74rem; color: rgba(255,255,255,.7); }
-  .weather-detail i { color: #5bc8f5; width: 14px; }
-  .weather-error { color: rgba(255,255,255,.5); font-size: .8rem; text-align: center; padding: 12px; }
-
-  /* Trending List */
-  .sidebar-box {
-    background: var(--white);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow-s);
-    border: 1px solid var(--border);
-    overflow: hidden;
-  }
-  .sidebar-box-header {
-    background: var(--ink);
-    color: #fff;
-    padding: 12px 16px;
-    display: flex; align-items: center; gap: 8px;
-    font-size: .82rem; font-weight: 700;
-    letter-spacing: .06em;
-  }
-  .sidebar-box-header i { color: var(--gold); }
-  .trending-list { list-style: none; }
-  .trending-item {
-    display: flex; gap: 12px; align-items: flex-start;
-    padding: 12px 16px;
-    border-bottom: 1px solid var(--border);
-    cursor: pointer; transition: var(--transition);
-  }
-  .trending-item:last-child { border-bottom: none; }
-  .trending-item:hover { background: var(--red-lite); }
-  .trending-num {
-    font-size: 1.3rem; font-weight: 900;
-    color: var(--border); font-family: var(--font-mono);
-    line-height: 1; flex-shrink: 0; width: 28px;
-    transition: var(--transition);
-  }
-  .trending-item:hover .trending-num { color: var(--red); }
-  .trending-text { font-size: .82rem; font-weight: 600; color: var(--ink); line-height: 1.5; }
-  .trending-meta { font-size: .68rem; color: var(--ink-4); margin-top: 3px; }
-
-  /* Ad Banner */
-  .ad-banner {
-    background: linear-gradient(135deg, var(--red) 0%, var(--red-dark) 100%);
-    border-radius: var(--radius);
-    padding: 22px;
-    text-align: center;
-    color: #fff;
-  }
-  .ad-banner .ad-tag { font-size: .65rem; letter-spacing: .12em; opacity: .7; margin-bottom: 6px; }
-  .ad-banner h3 { font-size: 1.1rem; font-weight: 800; margin-bottom: 6px; }
-  .ad-banner p { font-size: .78rem; opacity: .85; margin-bottom: 14px; }
-  .ad-btn {
-    display: inline-block; background: #fff; color: var(--red);
-    padding: 8px 20px; border-radius: 3px;
-    font-weight: 700; font-size: .8rem; text-decoration: none;
-    transition: var(--transition);
-  }
-  .ad-btn:hover { background: var(--gold); color: #fff; }
-
-  /* ─── SPORTS SECTION ─── */
-  #sports-section { margin-bottom: 40px; }
-  .sports-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 14px;
-  }
-  .sport-card {
-    background: var(--ink);
-    border-radius: var(--radius);
-    padding: 16px;
-    color: #fff;
-    cursor: pointer;
-    transition: var(--transition);
-    position: relative;
-    overflow: hidden;
-    border: 1px solid rgba(255,255,255,.08);
-  }
-  .sport-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-m); }
-  .sport-card::before {
-    content: '';
-    position: absolute; bottom: -20px; right: -20px;
-    width: 80px; height: 80px;
-    border-radius: 50%;
-    background: rgba(255,255,255,.04);
-  }
-  .sport-cat {
-    font-size: .64rem; font-weight: 700; letter-spacing: .14em;
-    text-transform: uppercase; color: var(--gold);
-    margin-bottom: 8px; display: flex; align-items: center; gap: 5px;
-  }
-  .sport-title { font-size: .88rem; font-weight: 700; line-height: 1.55; color: #eee; }
-  .sport-meta { font-size: .67rem; color: rgba(255,255,255,.4); margin-top: 10px; }
-
-  /* ─── LOAD MORE ─── */
-  .load-more-wrap { text-align: center; margin-top: 24px; }
-  .load-more-btn {
-    display: inline-flex; align-items: center; gap: 8px;
-    background: var(--white); color: var(--ink);
-    border: 2px solid var(--border);
-    padding: 11px 28px; border-radius: 3px;
-    font-size: .82rem; font-weight: 700;
-    cursor: pointer; transition: var(--transition);
-    font-family: var(--font-bn);
-  }
-  .load-more-btn:hover { background: var(--red); color: #fff; border-color: var(--red); }
-  .load-more-btn i { transition: var(--transition); }
-  .load-more-btn:hover i { transform: rotate(180deg); }
-
+  .sidebar-widget { background: var(--white); padding: 20px; border-radius: 8px; box-shadow: var(--shadow); margin-bottom: 30px; }
+  .ad-box { background: linear-gradient(135deg, #2c3e50, #bdc3c7); color: white; text-align: center; padding: 40px 20px; border-radius: 8px; }
+  
   /* ─── FOOTER ─── */
-  #footer-main {
-    background: var(--ink-2);
-    color: #bbb;
-    padding: 40px 24px 20px;
-    margin-top: 40px;
-  }
-  #footer-inner { max-width: 1280px; margin: 0 auto; }
-  .footer-grid {
-    display: grid;
-    grid-template-columns: 1.5fr 1fr 1fr 1fr;
-    gap: 32px;
-    margin-bottom: 32px;
-  }
-  .footer-brand .logo-text h1 { font-size: 1.4rem; }
-  .footer-brand p {
-    font-size: .78rem; line-height: 1.75;
-    margin-top: 10px; color: rgba(255,255,255,.45);
-  }
-  .footer-col h4 {
-    color: #fff; font-size: .8rem;
-    font-weight: 700; letter-spacing: .08em;
-    text-transform: uppercase; margin-bottom: 14px;
-    padding-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,.1);
-  }
-  .footer-links { list-style: none; }
-  .footer-links li { margin-bottom: 8px; }
-  .footer-links a {
-    color: rgba(255,255,255,.45); text-decoration: none;
-    font-size: .8rem; transition: var(--transition);
-    display: flex; align-items: center; gap: 6px;
-  }
-  .footer-links a:hover { color: var(--red); padding-left: 4px; }
-  .footer-links a::before { content: '›'; color: var(--red); }
-  .footer-bottom {
-    border-top: 1px solid rgba(255,255,255,.1);
-    padding-top: 18px;
-    display: flex; align-items: center; justify-content: space-between;
-    flex-wrap: wrap; gap: 10px;
-    font-size: .72rem; color: rgba(255,255,255,.3);
-  }
-  .footer-bottom a { color: var(--red); text-decoration: none; }
-
-  /* ─── NOTIFICATION TOAST ─── */
-  #toast {
-    position: fixed; bottom: 24px; right: 24px; z-index: 9999;
-    background: var(--ink); color: #fff;
-    padding: 12px 20px; border-radius: var(--radius);
-    font-size: .82rem; box-shadow: var(--shadow-l);
-    display: flex; align-items: center; gap: 10px;
-    transform: translateY(80px); opacity: 0;
-    transition: .35s cubic-bezier(.4,0,.2,1);
-    max-width: 320px;
-    border-left: 4px solid var(--red);
-  }
-  #toast.show { transform: translateY(0); opacity: 1; }
-  #toast i { color: var(--red); flex-shrink: 0; }
+  footer { background: var(--dark); color: #7f8c8d; padding: 50px 5%; margin-top: 50px; font-size: 0.9rem; }
+  .footer-bottom { border-top: 1px solid #333; margin-top: 30px; padding-top: 20px; display: flex; justify-content: space-between; }
 
   /* ─── RESPONSIVE ─── */
-  @media (max-width: 1024px) {
-    #two-col { grid-template-columns: 1fr; }
-    #sidebar { flex-direction: row; flex-wrap: wrap; }
-    #sidebar > * { flex: 1 1 280px; }
-    .footer-grid { grid-template-columns: 1fr 1fr; }
-  }
-  @media (max-width: 768px) {
-    #hero-grid { grid-template-columns: 1fr; grid-template-rows: auto; }
-    .hero-main { grid-row: auto; }
-    .hero-main .card-img { height: 220px; }
-    .hero-side { flex-direction: column; }
-    .hero-side .card-img { width: 100%; height: 140px; }
-    #utility-bar { padding: 6px 14px; }
-    #page-wrap { padding: 18px 14px 36px; }
-    .footer-grid { grid-template-columns: 1fr; }
-    #masthead-date { display: none; }
-  }
-  @media (max-width: 480px) {
-    .nav-item { padding: 12px 12px; font-size: .76rem; }
-    .logo-text h1 { font-size: 1.4rem; }
-  }
-
-  /* ─── ENTRY ANIMATION ─── */
-  .fade-in {
-    opacity: 0; transform: translateY(18px);
-    animation: fadeUp .5s forwards;
-  }
-  .fade-in:nth-child(1) { animation-delay: .05s }
-  .fade-in:nth-child(2) { animation-delay: .12s }
-  .fade-in:nth-child(3) { animation-delay: .19s }
-  .fade-in:nth-child(4) { animation-delay: .26s }
-  .fade-in:nth-child(5) { animation-delay: .33s }
-  .fade-in:nth-child(6) { animation-delay: .40s }
-  @keyframes fadeUp { to { opacity:1; transform:translateY(0); } }
-
-  /* ─── MISC ─── */
-  .badge {
-    display: inline-block;
-    background: var(--red); color: #fff;
-    font-size: .6rem; font-weight: 700;
-    padding: 2px 7px; border-radius: 10px;
-    letter-spacing: .08em; text-transform: uppercase;
-    margin-left: 6px; vertical-align: middle;
-  }
-  .img-placeholder {
-    width: 100%; height: 100%;
-    display: flex; align-items: center; justify-content: center;
-    background: linear-gradient(135deg, #e8ddd0 0%, #d5c9ba 100%);
-    color: var(--ink-4); font-size: 2rem;
-  }
+  @media (max-width: 768px) { .container { grid-template-columns: 1fr; } #top-bar { flex-direction: column; gap: 5px; text-align: center; } }
 </style>
 </head>
 <body>
 
-<div id="utility-bar">
-  <div class="left">
-    <span id="live-clock">--:--:--</span>
-    <div id="weather-pill">
-      <i class="fas fa-cloud-sun"></i>
-      <span id="util-weather">আবহাওয়া লোড হচ্ছে...</span>
-    </div>
-  </div>
-  <div class="right">
-    <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
-    <a href="#" class="social-icon"><i class="fab fa-youtube"></i></a>
-    <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+<div id="top-bar">
+  <div id="date-display">লোডিং...</div>
+  <div id="weather-widget">
+    <i class="fas fa-cloud-sun"></i> <span id="w-temp">--°C</span> | <span id="w-city">রাজশাহী</span>
   </div>
 </div>
 
-<div id="ticker-bar">
-  <div id="ticker-label"><i class="fas fa-circle"></i> ব্রেকিং নিউজ</div>
-  <div id="ticker-track">
-    <div id="ticker-content">
-      <span class="ticker-item">ModelXN News পোর্টালে স্বাগতম! এখানে আপনি পাবেন দেশ-বিদেশের সর্বশেষ সংবাদ।</span>
-    </div>
+<header>
+  <div class="logo">
+    <h1>Model<span>XN</span> News</h1>
+    <p>সঠিক সংবাদ, সবার আগে</p>
+  </div>
+</header>
+
+<div class="ticker-wrap">
+  <div class="ticker-title">ব্রেকিং</div>
+  <div class="ticker">
+    <div class="ticker-item" id="ticker-text">ModelXN নিউজ পোর্টালে স্বাগতম... দেশ ও বিদেশের সর্বশেষ খবরের জন্য চোখ রাখুন...</div>
   </div>
 </div>
 
-<div id="masthead">
-  <div id="masthead-inner">
-    <a href="#" class="logo-block">
-      <div class="logo-icon">MX</div>
-      <div class="logo-text">
-        <h1>Model<span>XN</span> News</h1>
-        <p>নির্ভুল সংবাদ, সবার আগে</p>
+<nav>
+  <a href="#" class="active" onclick="fetchAllNews('all')">হোম</a>
+  <a href="#" onclick="fetchAllNews('bangladesh')">বাংলাদেশ</a>
+  <a href="#" onclick="fetchAllNews('world')">আন্তর্জাতিক</a>
+  <a href="#" onclick="fetchAllNews('technology')">প্রযুক্তি</a>
+  <a href="#" onclick="fetchAllNews('sports')">খেলাধুলা</a>
+  <a href="#" onclick="fetchAllNews('entertainment')">বিনোদন</a>
+</nav>
+
+<div class="container">
+  
+  <div class="main-content">
+    
+    <div id="admin-section" style="display:none;">
+      <div class="section-title">
+        <span><i class="fas fa-star" style="color:var(--primary)"></i> সম্পাদকীয় / বিশেষ সংবাদ</span>
       </div>
-    </a>
-    <div id="masthead-date">
-      <strong id="date-display">--</strong><br>
-      বাংলাদেশ সময়
+      <div id="admin-news-grid" class="news-grid" style="margin-bottom: 40px;"></div>
     </div>
+
+    <div class="section-title">
+      <span><i class="fas fa-globe"></i> সর্বশেষ সংবাদ</span>
+      <span class="refresh-btn" onclick="fetchAllNews()"><i class="fas fa-sync-alt"></i> রিফ্রেশ</span>
+    </div>
+    <div id="api-news-grid" class="news-grid">
+      <p style="text-align:center;">সংবাদ লোড হচ্ছে...</p>
+    </div>
+
   </div>
+
+  <aside>
+    <div class="sidebar-widget ad-box">
+      <h3>বিজ্ঞাপন দিন</h3>
+      <p>আপনার পণ্যের প্রচার করুন এখানে</p>
+      <button style="background:var(--primary); color:white; border:none; padding:8px 15px; margin-top:10px; cursor:pointer;">যোগাযোগ</button>
+    </div>
+    
+    <div class="sidebar-widget">
+      <h4><i class="fas fa-fire"></i> জনপ্রিয় ট্যাগ</h4>
+      <div style="display:flex; flex-wrap:wrap; gap:5px; margin-top:10px;">
+        <span style="background:#eee; padding:5px 10px; font-size:0.8rem; border-radius:20px;">#বাংলাদেশ</span>
+        <span style="background:#eee; padding:5px 10px; font-size:0.8rem; border-radius:20px;">#ক্রিকেট</span>
+        <span style="background:#eee; padding:5px 10px; font-size:0.8rem; border-radius:20px;">#Viral</span>
+        <span style="background:#eee; padding:5px 10px; font-size:0.8rem; border-radius:20px;">#Tech</span>
+      </div>
+    </div>
+  </aside>
+
 </div>
 
-<div id="nav-bar">
-  <div id="nav-inner">
-    <a class="nav-item active" onclick="filterNews('all')"><i class="fas fa-home"></i> হোম</a>
-    <a class="nav-item" onclick="filterNews('bangladesh')"><i class="fas fa-flag"></i> বাংলাদেশ</a>
-    <a class="nav-item" onclick="filterNews('world')"><i class="fas fa-globe"></i> বিশ্ব</a>
-    <a class="nav-item" onclick="filterNews('technology')"><i class="fas fa-microchip"></i> প্রযুক্তি</a>
-    <a class="nav-item" onclick="filterNews('sports')"><i class="fas fa-futbol"></i> খেলাধুলা</a>
-    <a class="nav-item" onclick="filterNews('entertainment')"><i class="fas fa-film"></i> বিনোদন</a>
-  </div>
-</div>
-
-<div id="page-wrap">
-
-  <div id="hero-section" style="margin-bottom:36px;">
-    <div class="section-header">
-      <div class="section-icon"><i class="fas fa-fire"></i></div>
-      <h2>শীর্ষ সংবাদ</h2>
-    </div>
-    <div id="hero-grid">
-      <div class="hero-main skeleton-card" style="min-height:320px;">
-        <div class="skeleton" style="height:320px;"></div>
-      </div>
-    </div>
-  </div>
-
-  <div id="admin-section" style="margin-bottom: 30px; display: none;">
-    <div class="section-header" style="border-color: #c0392b;">
-      <div class="section-icon" style="background: #c0392b;"><i class="fas fa-star"></i></div>
-      <h2 style="color: #c0392b;">সম্পাদকীয় / বিশেষ সংবাদ</h2>
-    </div>
-    <div id="admin-news-grid" class="news-grid">
-      </div>
-  </div>
-
-  <div id="two-col">
-    <div id="main-col">
-      <div class="section-header">
-        <div class="section-icon"><i class="fas fa-globe-asia"></i></div>
-        <h2>বাংলাদেশ ও বিশ্ব সংবাদ</h2>
-        <a href="#" class="see-all" onclick="fetchMainNews()"><i class="fas fa-sync-alt"></i> রিফ্রেশ</a>
-      </div>
-      <div id="news-grid" class="news-grid">
-        <div class="skeleton-card"><div class="skeleton skeleton-img"></div></div>
-        <div class="skeleton-card"><div class="skeleton skeleton-img"></div></div>
-      </div>
-    </div>
-
-    <div id="sidebar">
-      <div id="weather-widget">
-        <div class="weather-city">
-          <i class="fas fa-map-marker-alt"></i> <span id="w-city">রাজশাহী, বাংলাদেশ</span>
-        </div>
-        <div class="weather-main">
-          <div class="weather-icon-lg" id="w-icon">⛅</div>
-          <div>
-            <div class="weather-temp" id="w-temp">--<sup>°C</sup></div>
-            <div class="weather-desc" id="w-desc">লোড হচ্ছে...</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="ad-banner">
-        <div class="ad-tag">ADVERTISEMENT</div>
-        <h3>ModelXN News</h3>
-        <p>সঠিক খবর জানুন সবার আগে</p>
-        <a href="#" class="ad-btn">যোগাযোগ করুন</a>
-      </div>
-    </div>
-  </div>
-
-</div><footer id="footer-main">
-  <div id="footer-inner">
-    <div class="footer-grid">
-      <div class="footer-brand">
-        <div class="logo-text"><h1 style="color:#fff;">Model<span style="color:var(--red)">XN</span> News</h1></div>
-        <p>নির্ভুল, নিরপেক্ষ এবং তাৎক্ষণিক সংবাদ পরিবেশনে প্রতিশ্রুতিবদ্ধ।</p>
-      </div>
-    </div>
-    <div class="footer-bottom">
-      <span>&copy; ২০২৬ ModelXN News. সর্বস্বত্ব সংরক্ষিত।</span>
-      <span>Developed by Shuvo Bro</span>
-    </div>
+<footer>
+  <div class="footer-bottom">
+    <p>&copy; ২০২৬ ModelXN News. সর্বস্বত্ব সংরক্ষিত।</p>
+    <p>Developed by Shuvo Bro</p>
   </div>
 </footer>
-
-<div id="toast"><i class="fas fa-info-circle"></i> <span id="toast-msg">আপডেট সম্পন্ন</span></div>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
 <script>
-/* ── FIREBASE CONFIG ── */
-const firebaseConfig = {
-    apiKey: "AIzaSyB3X2kp_KR96uV1Mh4vqKDKsdAQv3rXOxU",
-    authDomain: "baby-75d6e.firebaseapp.com",
-    projectId: "baby-75d6e",
-    storageBucket: "baby-75d6e.firebasestorage.app",
-    messagingSenderId: "1018260950671",
-    appId: "1:1018260950671:web:12388b977b6fd9fbbf2afa",
-    measurementId: "G-B70VF537LZ"
+/* ─── ১. কনফিগারেশন (API KEYS) ─── */
+const KEYS = {
+  GNEWS: '137053cf0244c5090b6fd16bfcebccc7',
+  NEWSDATA: 'pub_61fbb227c3654dd99d61b192b9a26e9a',
+  WEATHER: '622c4de5ee05cbfb7e93716f7b4324bf'
 };
 
-// Initialize Firebase
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyB3X2kp_KR96uV1Mh4vqKDKsdAQv3rXOxU",
+  authDomain: "baby-75d6e.firebaseapp.com",
+  projectId: "baby-75d6e",
+  storageBucket: "baby-75d6e.firebasestorage.app",
+  messagingSenderId: "1018260950671",
+  appId: "1:1018260950671:web:12388b977b6fd9fbbf2afa"
+};
+
+/* ─── ২. FIREBASE সেটআপ ─── */
 try {
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+  firebase.initializeApp(FIREBASE_CONFIG);
+  const db = firebase.firestore();
+  
+  // অ্যাডমিন নিউজ লোড করা
+  db.collection("news").orderBy("timestamp", "desc").limit(3).onSnapshot(snap => {
+    const container = document.getElementById('admin-news-grid');
+    const section = document.getElementById('admin-section');
     
-    // Admin News Function
-    function loadAdminNews() {
-        const container = document.getElementById('admin-news-grid');
-        const section = document.getElementById('admin-section');
-        
-        db.collection("news").orderBy("timestamp", "desc").limit(4).get().then((querySnapshot) => {
-            if (!querySnapshot.empty) {
-                section.style.display = 'block';
-                container.innerHTML = '';
-                querySnapshot.forEach((doc) => {
-                    const data = doc.data();
-                    const html = `
-                    <div class="news-card fade-in" style="border-top: 3px solid #c0392b;" onclick="showToast('এটি অ্যাডমিন পোস্ট')">
-                        <div class="card-body">
-                            <div class="card-cat" style="color:#c0392b;">ADMIN UPDATE</div>
-                            <div class="card-title">${data.title}</div>
-                            <p style="font-size: 0.9rem; color: #555; margin-bottom: 10px;">
-                                ${data.content.substring(0, 100)}...
-                            </p>
-                            <div class="card-meta">
-                                <i class="fas fa-user-shield"></i> অ্যাডমিন
-                            </div>
-                        </div>
-                    </div>`;
-                    container.innerHTML += html;
-                });
-            }
-        });
+    if(!snap.empty) {
+      section.style.display = 'block';
+      container.innerHTML = '';
+      snap.forEach(doc => {
+        const d = doc.data();
+        container.innerHTML += createCard(
+          d.title, 
+          d.content.substring(0, 100) + '...', 
+          null, 
+          'Admin Pick', 
+          'ModelXN', 
+          'Just Now',
+          true // is admin
+        );
+      });
     }
-    // Load admin news on start
-    loadAdminNews();
-} catch (e) {
-    console.error("Firebase Error:", e);
-}
+  });
+} catch(e) { console.log('Firebase Init Error'); }
 
-/* ── API CONFIG ── */
-const GNEWS_KEY = '137053cf0244c5090b6fd16bfcebccc7'; // Your Key
-const GNEWS_BASE = 'https://gnews.io/api/v4';
-const WEATHER_API = 'https://api.open-meteo.com/v1/forecast';
-const LAT = 24.3745, LON = 88.6042; // Rajshahi
+/* ─── ৩. মেইন নিউজ লজিক (স্মার্ট ফলব্যাক সিস্টেম) ─── */
+async function fetchAllNews(query = '') {
+  const container = document.getElementById('api-news-grid');
+  container.innerHTML = '<p style="text-align:center">খবর খোঁজা হচ্ছে...</p>';
 
-/* ── INIT ── */
-document.addEventListener('DOMContentLoaded', () => {
-  updateClock();
-  setInterval(updateClock, 1000);
-  updateDate();
-  fetchWeather();
-  loadAllNews();
-});
-
-/* ── FETCH NEWS (GNews) ── */
-async function loadAllNews() {
-    // Fetch Top Headlines
-    try {
-        const url = `${GNEWS_BASE}/top-headlines?lang=bn&country=bd&max=3&apikey=${GNEWS_KEY}`;
-        const res = await fetch(url);
-        const data = await res.json();
-        
-        if(data.articles) {
-            renderHero(data.articles);
-            buildTicker(data.articles);
-        }
-    } catch(e) { console.log('Hero Error'); }
-
-    // Fetch Main Grid
-    fetchMainNews();
-}
-
-async function fetchMainNews(query='') {
-    const grid = document.getElementById('news-grid');
-    try {
-        let url = query 
-            ? `${GNEWS_BASE}/search?q=${query}&lang=bn&max=9&apikey=${GNEWS_KEY}`
-            : `${GNEWS_BASE}/top-headlines?lang=bn&max=9&apikey=${GNEWS_KEY}`;
-            
-        const res = await fetch(url);
-        const data = await res.json();
-        
-        if(data.articles) {
-            grid.innerHTML = data.articles.map(a => `
-                <div class="news-card fade-in" onclick="window.open('${a.url}')">
-                    <div class="card-img">
-                        <img src="${a.image || 'https://via.placeholder.com/300x200'}" onerror="this.src='https://via.placeholder.com/300x200'">
-                    </div>
-                    <div class="card-body">
-                        <div class="card-cat">${a.source.name}</div>
-                        <div class="card-title">${a.title}</div>
-                        <div class="card-meta"><i class="fas fa-clock"></i> ${new Date(a.publishedAt).toLocaleDateString()}</div>
-                    </div>
-                </div>
-            `).join('');
-        }
-    } catch(e) {
-        grid.innerHTML = '<p style="padding:20px;">বর্তমানে সংবাদ লোড করা যাচ্ছে না।</p>';
-    }
-}
-
-function filterNews(cat) {
-    if(cat === 'all') fetchMainNews();
-    else fetchMainNews(cat);
-}
-
-/* ── WEATHER ── */
-async function fetchWeather() {
-    try {
-        const res = await fetch(`${WEATHER_API}?latitude=${LAT}&longitude=${LON}&current=temperature_2m,weather_code&timezone=Asia%2FDhaka`);
-        const data = await res.json();
-        const temp = Math.round(data.current.temperature_2m);
-        document.getElementById('w-temp').innerHTML = `${temp}<sup>°C</sup>`;
-        document.getElementById('util-weather').textContent = `রাজশাহী ${temp}°C`;
-        document.getElementById('w-desc').textContent = "আপডেট হচ্ছে...";
-    } catch(e) { console.log('Weather Error'); }
-}
-
-/* ── RENDER HERO ── */
-function renderHero(articles) {
-    if(!articles.length) return;
-    const main = articles[0];
-    const side = articles.slice(1,3);
-    const grid = document.getElementById('hero-grid');
+  // ধাপ ১: GNews দিয়ে চেষ্টা
+  try {
+    const url = query 
+      ? `https://gnews.io/api/v4/search?q=${query}&lang=bn&max=9&apikey=${KEYS.GNEWS}`
+      : `https://gnews.io/api/v4/top-headlines?lang=bn&country=bd&max=9&apikey=${KEYS.GNEWS}`;
     
-    let html = `
-    <div class="hero-main fade-in" onclick="window.open('${main.url}')">
-        <div class="card-img"><img src="${main.image}" onerror="this.src='https://via.placeholder.com/800x400'"></div>
-        <div class="card-body">
-            <div class="card-cat">শীর্ষ সংবাদ</div>
-            <div class="card-title">${main.title}</div>
-            <div class="card-meta"><i class="fas fa-clock"></i> ${new Date(main.publishedAt).toLocaleDateString()}</div>
+    const res = await fetch(url);
+    if(res.status === 429) throw new Error("Limit Exceeded"); // লিমিট শেষ হলে এরর দেবে
+    const data = await res.json();
+    
+    if(data.articles && data.articles.length > 0) {
+      renderNews(data.articles, 'gnews');
+      return; // সফল হলে এখানেই শেষ
+    }
+  } catch(e) { console.log('GNews Failed, trying backup...'); }
+
+  // ধাপ ২: NewsData দিয়ে চেষ্টা (যদি GNews ফেল করে)
+  try {
+    const url = `https://newsdata.io/api/1/news?apikey=${KEYS.NEWSDATA}&country=bd&language=bn`;
+    const res = await fetch(url);
+    const data = await res.json();
+    
+    if(data.results && data.results.length > 0) {
+      renderNews(data.results, 'newsdata');
+      return;
+    }
+  } catch(e) { console.log('NewsData Failed, using demo...'); }
+
+  // ধাপ ৩: সব ফেল করলে ডেমো ডাটা দেখাবে
+  loadDemoData(); 
+}
+
+/* ─── ৪. রেন্ডারিং ফাংশন ─── */
+function renderNews(articles, source) {
+  const container = document.getElementById('api-news-grid');
+  container.innerHTML = '';
+
+  articles.forEach(item => {
+    // সোর্স অনুযায়ী ডাটা ঠিক করা
+    let title = source === 'gnews' ? item.title : item.title;
+    let desc = source === 'gnews' ? item.description : item.description;
+    let img = source === 'gnews' ? item.image : item.image_url;
+    let link = source === 'gnews' ? item.url : item.link;
+    let srcName = source === 'gnews' ? item.source.name : item.source_id;
+    let date = new Date().toLocaleDateString('bn-BD');
+
+    container.innerHTML += createCard(title, desc, img, 'Latest', srcName, date, false, link);
+  });
+}
+
+function createCard(title, desc, img, tag, source, time, isAdmin, link='#') {
+  const imageHtml = img 
+    ? `<img src="${img}" onerror="this.src='https://via.placeholder.com/300x200?text=ModelXN'">` 
+    : `<img src="https://via.placeholder.com/300x200?text=News+Update">`;
+    
+  const badge = isAdmin ? '<span class="admin-badge">ADMIN</span> ' : '';
+  const cardClass = isAdmin ? 'card admin-card' : 'card';
+
+  return `
+    <div class="${cardClass}">
+      <div class="card-img" onclick="window.open('${link}')" style="cursor:pointer">${imageHtml}</div>
+      <div class="card-body">
+        <div class="card-tag">${badge}${tag}</div>
+        <div class="card-title" onclick="window.open('${link}')" style="cursor:pointer">${title}</div>
+        <p style="font-size:0.85rem; color:#555;">${desc || 'বিস্তারিত জানতে ক্লিক করুন...'}</p>
+        <div class="card-meta">
+          <span><i class="fas fa-newspaper"></i> ${source}</span>
+          <span><i class="far fa-clock"></i> ${time}</span>
         </div>
-    </div>`;
-    
-    side.forEach(a => {
-        html += `
-        <div class="hero-side fade-in" onclick="window.open('${a.url}')">
-            <div class="card-img"><img src="${a.image}" onerror="this.src='https://via.placeholder.com/200'"></div>
-            <div class="card-body">
-                <div class="card-title">${a.title}</div>
-            </div>
-        </div>`;
-    });
-    grid.innerHTML = html;
+      </div>
+    </div>
+  `;
 }
 
-/* ── UTILS ── */
-function buildTicker(articles) {
-    const items = articles.map(a => `<span class="ticker-item" onclick="window.open('${a.url}')">${a.title}</span>`).join('');
-    document.getElementById('ticker-content').innerHTML = items + items;
+/* ─── ৫. ডেমো ডাটা (ব্যাকআপ) ─── */
+function loadDemoData() {
+  const demoNews = [
+    { title: "বাংলাদেশের জিডিপি প্রবৃদ্ধিতে নতুন রেকর্ড", desc: "অর্থনীতিতে নতুন দিগন্ত উন্মোচিত হয়েছে..." },
+    { title: "রাজশাহীতে আধুনিক হাই-টেক পার্কের উদ্বোধন", desc: "তরুণদের জন্য কর্মসংস্থানের বিশাল সুযোগ..." },
+    { title: "বিশ্বকাপ ক্রিকেটে বাংলাদেশের দুর্দান্ত জয়", desc: "টাইগারদের গর্জনে কাঁপলো বিশ্ব..." },
+    { title: "AI প্রযুক্তিতে নতুন বিপ্লব: চ্যাটজিপিটি ৫", desc: "প্রযুক্তি বিশ্বে আসছে আমূল পরিবর্তন..." }
+  ];
+  const container = document.getElementById('api-news-grid');
+  container.innerHTML = '';
+  demoNews.forEach(n => {
+    container.innerHTML += createCard(n.title, n.desc, null, 'Demo', 'System', 'Just Now', false);
+  });
 }
-function updateClock() {
-    document.getElementById('live-clock').textContent = new Date().toLocaleTimeString('en-BD');
+
+/* ─── ৬. আবহাওয়া ও অন্যান্য ─── */
+async function loadWeather() {
+  try {
+    // ওপেনওয়েদার এপিআই (আপনার কি দিয়ে)
+    const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=Rajshahi&units=metric&appid=${KEYS.WEATHER}`);
+    const data = await res.json();
+    document.getElementById('w-temp').innerText = Math.round(data.main.temp) + "°C";
+    document.getElementById('w-city').innerText = data.name;
+  } catch(e) { console.log('Weather Error'); }
 }
-function updateDate() {
-    document.getElementById('date-display').textContent = new Date().toLocaleDateString('bn-BD', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
+
+function updateTime() {
+  const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+  document.getElementById('date-display').innerText = new Date().toLocaleDateString('bn-BD', options);
 }
-function showToast(msg) {
-    const t = document.getElementById('toast');
-    document.getElementById('toast-msg').textContent = msg;
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 3000);
-}
+
+// Start Everything
+window.onload = () => {
+  updateTime();
+  loadWeather();
+  fetchAllNews(); // অটোমেটিক সব সোর্স চেক করবে
+};
 </script>
 </body>
 </html>
